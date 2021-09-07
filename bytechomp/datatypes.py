@@ -1,0 +1,1 @@
+# use typing module to create new datatypes that can be referenced for parsing. Make sure derivative types inherit the corresponding type in python (i.e. u8 inherits int so that it can be used in the dataclass after parsing as an int).
