@@ -1,5 +1,14 @@
 from __future__ import annotations
-from typing import Any, Union, Annotated, get_origin, get_args, GenericAlias
+from typing import (
+    Any,
+    Optional,
+    Union,
+    Annotated,
+    get_origin,
+    get_args,
+    Generic,
+    TypeVar,
+)
 from dataclasses import dataclass, is_dataclass, fields, MISSING
 from collections import OrderedDict
 import inspect
@@ -10,34 +19,49 @@ from bytechomp.datatypes import *
 @dataclass
 class BasicProtocolSchema:
     parsing_type: Union[ELEMENTARY_TYPE, STRING, BYTES]
-    python_type: Union[int, float, str, bytes]
+    python_type: Optional[type]
     parser_tag: str
     length: int
     default_value: Union[int, float, str, bytes, None] = None
     raw_data: bytes = b""
     parsed_value: Union[int, float, str, bytes, None] = None
 
-    
-class Reader:
-    def __init__(self, datatype: type, byte_order: str = "little") -> None:
-        if not inspect.isclass(datatype) or not is_dataclass(datatype):
-            raise Exception("datatype must be a dataclass declaration")
+
+T = TypeVar("T")
+
+
+class Reader(Generic[T]):
+    def __init__(self, byte_order: str = "little") -> None:
 
         if byte_order not in ["big", "little"]:
-            raise Exception("byte order must be one \"big\" or \"little\"")
+            raise Exception('byte order must be one "big" or "little"')
 
-        self.__datatype = datatype
-        self.__byte_order = byte_order
-        self.__is_complete = False
-        self.__data = b""
+        self.__datatype: Optional[type] = None
+        self.__byte_order: str = byte_order
+        self.__is_complete: bool = False
+        self.__data: bytes = b""
+        self.__data_description: OrderedDict = OrderedDict()
+
+    def allocate(self) -> Reader:
+        self.__datatype = self.__orig_class__.__args__[0]  # type: ignore
+
+        if (
+            not inspect.isclass(self.__datatype)
+            or not is_dataclass(self.__datatype)
+            or self.__datatype is None
+        ):
+            raise Exception("datatype must be a dataclass declaration")
 
         # verify that the datatype contains only known types
-        self.__data_description: OrderedDict = self.__build_data_description(self.__datatype)
-
+        self.__data_description = self.__build_data_description(self.__datatype)
         print(self.__data_description)
 
+        return self
+
     def __build_data_description(self, datatype: type) -> OrderedDict:
-        object_description: dict[str, Union[list, dict, ELEMENTARY_TYPE]] = OrderedDict()
+        object_description: OrderedDict[
+            str, Union[list, OrderedDict, BasicProtocolSchema]
+        ] = OrderedDict()
 
         for field in fields(datatype):
             if field.type in ELEMENTARY_TYPE_LIST:
@@ -50,19 +74,27 @@ class Reader:
                 )
             elif inspect.isclass(field.type) and is_dataclass(field.type):
                 if field.default != MISSING:
-                    raise Exception(f"cannot have default value on nested types (field: {field.name})")
-                object_description[field.name] = self.__build_data_description(field.type)
+                    raise Exception(
+                        f"cannot have default value on nested types (field: {field.name})"
+                    )
+                object_description[field.name] = self.__build_data_description(
+                    field.type
+                )
             elif get_origin(field.type) == Annotated:
                 args = get_args(field.type)
 
                 if len(args) != 2:
-                    raise Exception(f"annotated value should only have two arguments (field: {field.name})")
+                    raise Exception(
+                        f"annotated value should only have two arguments (field: {field.name})"
+                    )
 
                 arg_type = args[0]
                 length = args[1]
 
                 if type(length) != int:
-                    raise Exception(f"second annotated argument must be an integer to denote length")
+                    raise Exception(
+                        f"second annotated argument must be an integer to denote length"
+                    )
 
                 # deal with string type
                 if arg_type in [STRING, str]:
@@ -71,7 +103,9 @@ class Reader:
                         python_type=str,
                         parser_tag="c",
                         length=length,
-                        default_value=None if field.default == MISSING else field.default,
+                        default_value=None
+                        if field.default == MISSING
+                        else field.default,
                     )
 
                 # deal with bytes type
@@ -81,7 +115,9 @@ class Reader:
                         python_type=bytes,
                         parser_tag="c",
                         length=length,
-                        default_value=None if field.default == MISSING else field.default,
+                        default_value=None
+                        if field.default == MISSING
+                        else field.default,
                     )
 
                 # deal with list type
@@ -89,7 +125,9 @@ class Reader:
                     list_type_args = get_args(arg_type)
 
                     if len(list_type_args) != 1:
-                        raise Exception(f"list must contain only one kind of data type (field: {field.name})")
+                        raise Exception(
+                            f"list must contain only one kind of data type (field: {field.name})"
+                        )
 
                     list_type = list_type_args[0]
 
@@ -107,16 +145,24 @@ class Reader:
                             self.__build_data_description(list_type)
                         ] * length
                     else:
-                        raise Exception(f"unsupported list type: {list_type} (field: {field.name})")
+                        raise Exception(
+                            f"unsupported list type: {list_type} (field: {field.name})"
+                        )
 
                 else:
-                    raise Exception(f"unsupported annotated type: {arg_type} (field: {field.name})")
+                    raise Exception(
+                        f"unsupported annotated type: {arg_type} (field: {field.name})"
+                    )
 
                 pass
             elif field.type in [list, bytes, str, STRING, BYTES]:
-                raise Exception(f"cannot have unannotated list, string, or bytes type (length required, field: {field.name})")
+                raise Exception(
+                    f"cannot have unannotated list, string, or bytes type (length required, field: {field.name})"
+                )
             else:
-                raise Exception(f"unsupported data type ({field.type}) on field {field.name}")
+                raise Exception(
+                    f"unsupported data type ({field.type}) on field {field.name}"
+                )
 
         return object_description
 
