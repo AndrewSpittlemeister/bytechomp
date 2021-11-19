@@ -6,14 +6,14 @@ authors = ["Andrew Spittlemeister <andrew.spittlemeister@pm.me>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 
 [tool.poetry.dev-dependencies]
-black = "^21.8b0"
-mypy = "^0.910"
-bandit = "^1.7.0"
-safety = "^1.10.3"
-pytest = "^6.2.5"
+black = "*"
+mypy = "*"
+bandit = "*"
+safety = "*"
+pytest = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

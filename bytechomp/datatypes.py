@@ -1,7 +1,7 @@
 # use typing module to create new datatypes that can be referenced for parsing. Make sure derivative types inherit the corresponding type in python (i.e. u8 inherits int so that it can be used in the dataclass after parsing as an int).
 # make mapping of new types to struct codes and also make that mapping FINAL
 
-from typing import NewType, Final, Union, Callable
+from typing import NewType, Final, Union
 
 
 ### Elementary Data Types #############################################################################################
@@ -18,7 +18,7 @@ F16 = NewType("F16", float)
 F32 = NewType("F32", float)
 F64 = NewType("F64", float)
 
-ELEMENTARY_TYPE = Union[type, Callable]
+ELEMENTARY_TYPE = type | NewType
 ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [
     PAD,
     U8,
@@ -35,11 +35,6 @@ ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [
     int,
     float,
 ]
-#######################################################################################################################
-
-### String-like Data Types ############################################################################################
-STRING = NewType("STRING", str)
-BYTES = NewType("BYTES", bytes)
 #######################################################################################################################
 
 TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {
