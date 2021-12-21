@@ -6,7 +6,7 @@ from struct import Struct
 from enum import Enum
 import inspect
 
-from bytechomp.data_descriptor import build_data_description, build_data_pattern, BasicParsingElement
+from bytechomp.data_descriptor import build_data_description, build_data_pattern, build_structure, BasicParsingElement
 
 T = TypeVar("T")
 
@@ -46,7 +46,6 @@ class Reader(Generic[T]):
             or self.__datatype is None
         ):
             raise Exception("datatype must be a dataclass declaration")
-
         # print(self.__datatype)
 
         # verify that the datatype contains only known types
@@ -63,15 +62,6 @@ class Reader(Generic[T]):
 
         return self
 
-    def __build_structure(
-        self,
-        args: list[int, float, bytes],
-        datatype: Any,
-        description: OrderedDict[str, BasicParsingElement | list[BasicParsingElement | OrderedDict] | OrderedDict]
-    ) -> Any:
-        pass
-
-
     def feed(self, data: bytes) -> None:
         self.__data += data
 
@@ -83,7 +73,8 @@ class Reader(Generic[T]):
         return len(self.__data) >= self.__struct.size
 
     def build(self) -> T | None:
-        if not self.is_complete():
-            return None
-        else:
-            pass
+        if self.is_complete():
+            struct_bytes = self.__data[:self.__struct.size]
+            self.__data = self.__data[self.__struct.size:]
+            return build_structure(list(self.__struct.unpack(struct_bytes)), self.__data_description)
+        return None

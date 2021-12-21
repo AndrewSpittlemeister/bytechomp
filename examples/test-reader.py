@@ -18,9 +18,13 @@ def main() -> None:
     reader = Reader[Beta]().allocate()
     reader << b"asdfas" * 200
     print(reader.is_complete())
+    print("building...")
+    print(reader.build())
+    print(reader.build())
+    print(reader.build())
 
-    print(Alpha(**{"a": 1, "b": 1, "c": "asdfg"}))
-    print(Beta(**{"timestamp": 101.1, "alpha": Alpha(**{"a": 1, "b": 1, "c": "asdfg"}), "alphas": [Alpha(**{"a": 1, "b": 1, "c": "asdfg"})] * 2}))
+    # print(Alpha(**{"a": 1, "b": 1, "c": "asdfg"}))
+    # print(Beta(**{"timestamp": 101.1, "alpha": Alpha(**{"a": 1, "b": 1, "c": "asdfg"}), "alphas": [Alpha(**{"a": 1, "b": 1, "c": "asdfg"})] * 2}))
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "bytechomp"
 version = "0.1.0"
-description = "A pure python, declarative binary protocol parser using dataclasses."
+description = "A pure python, declarative binary protocol parser using dataclasses and type hinting."
 authors = ["Andrew Spittlemeister <andrew.spittlemeister@pm.me>"]
 license = "MIT"
 
@@ -14,6 +14,7 @@ mypy = "*"
 bandit = "*"
 safety = "*"
 pytest = "*"
+pylint = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

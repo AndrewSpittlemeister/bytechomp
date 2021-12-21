@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Annotated, get_origin, get_args
+from typing import Annotated, Any, get_origin, get_args
 from dataclasses import dataclass, is_dataclass, fields, MISSING
 from collections import OrderedDict
 import inspect
@@ -139,3 +139,41 @@ def build_data_pattern(
         else:
             raise Exception(f"invalid element type found ({name}: {type(root_element)})")
     return pattern
+
+
+def resolve_basic_type(arg: int | float | bytes, element: BasicParsingElement) -> int | float | bytes:
+    if isinstance(arg, element.python_type):
+        return arg
+    elif type(arg) == bytes and element.python_type is str:
+        return arg.decode("utf-8")
+    raise Exception("invalid match between types")
+
+
+def build_structure(
+    args: list[int | float | bytes],
+    description: OrderedDict[str, BasicParsingElement | list[BasicParsingElement | OrderedDict] | OrderedDict],
+) -> Any:
+    cls_type = description.get('__struct_type__')
+    cls_args = {}
+    # print(f"constructing type {cls_type}")
+
+    for name, root_element in filter(lambda item: item[0] != "__struct_type__", description.items()):
+        if isinstance(root_element, BasicParsingElement):
+            cls_args[name] = resolve_basic_type(args.pop(0), root_element)
+        elif isinstance(root_element, list):
+            list_element = []
+            for sub_element in root_element:
+                # sub elements can only be a elementary data types or other dataclasses
+                if isinstance(sub_element, BasicParsingElement):
+                    resolve_basic_type(args.pop(0), sub_element)
+                elif isinstance(sub_element, OrderedDict):
+                    list_element.append(build_structure(args, sub_element))
+                else:
+                    raise Exception(f"invalid list type found ({name})")
+            cls_args[name] = list_element
+        elif isinstance(root_element, OrderedDict):
+            cls_args[name] = build_structure(args, root_element)
+        else:
+            raise Exception(f"invalid element type found ({name}: {type(root_element)})")
+
+    return cls_type(**cls_args)

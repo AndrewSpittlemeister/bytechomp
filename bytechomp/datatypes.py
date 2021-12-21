@@ -67,7 +67,7 @@ TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, Union[type, None]]] = {
     F16: float,
     F32: float,
     F64: float,
-    int: float,
+    int: int,
     float: float,
 }
 
