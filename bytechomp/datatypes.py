@@ -1,10 +1,12 @@
-# use typing module to create new datatypes that can be referenced for parsing. Make sure derivative types inherit the corresponding type in python (i.e. u8 inherits int so that it can be used in the dataclass after parsing as an int).
-# make mapping of new types to struct codes and also make that mapping FINAL
+"""
+bytechomp.datatypes
+"""
 
 from typing import NewType, Final, Union
 
 
-### Elementary Data Types #############################################################################################
+### Elementary Data Types ##########################################################################
+
 PAD = NewType("PAD", int)
 U8 = NewType("U8", int)
 U16 = NewType("U16", int)
@@ -19,7 +21,7 @@ F32 = NewType("F32", float)
 F64 = NewType("F64", float)
 
 ELEMENTARY_TYPE = type | NewType
-ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [
+ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [  # type: ignore
     PAD,
     U8,
     U16,
@@ -35,9 +37,12 @@ ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [
     int,
     float,
 ]
-#######################################################################################################################
 
-TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {
+####################################################################################################
+
+### Data Type Lookup Tables ########################################################################
+
+TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {  # type: ignore
     PAD: "x",
     U8: "B",
     U16: "H",
@@ -54,7 +59,7 @@ TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {
     float: "d",
 }
 
-TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, Union[type, None]]] = {
+TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, Union[type, None]]] = {  # type: ignore
     PAD: None,
     U8: int,
     U16: int,
@@ -71,7 +76,7 @@ TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, Union[type, None]]] = {
     float: float,
 }
 
-TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {
+TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {  # type: ignore
     PAD: 1,
     U8: 1,
     U16: 2,
@@ -87,3 +92,5 @@ TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {
     int: 8,
     float: 8,
 }
+
+####################################################################################################

@@ -82,3 +82,7 @@ def main() -> None:
 
 
 ## How does this work?
+
+## Additional Notes
+
+- uses undocumented reflection API
