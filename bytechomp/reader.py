@@ -78,3 +78,6 @@ class Reader(Generic[T]):
             self.__data = self.__data[self.__struct.size:]
             return build_structure(list(self.__struct.unpack(struct_bytes)), self.__data_description)
         return None
+
+    def clear(self) -> None:
+        self.__data = b""
