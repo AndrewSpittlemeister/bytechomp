@@ -41,7 +41,7 @@ from bytechomp.datatypes import U16, F32
 class Header:
     timestamp: float  # native datatypes can be used when assuming full precision
     message_count: int  # similarly with 64-bit integers
-    message_identity: U16  # bytechomp also provides custom datatypes that will be cast to native when deserialized
+    message_identity: U16  # custom datatypes are available and will be cast to native when deserialized
 
 
 @dataclass
