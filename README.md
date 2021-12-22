@@ -83,6 +83,56 @@ def main() -> None:
 
 ## How does this work?
 
+While a binary stream is usually represented as a flat, continuous data, `bytechomp` can be used as a structural abstraction over this data. Therefore, if there was a message with the following structure for a message called `UserState`:
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `user_id` | uint64 | user's unique identity |
+| `balance` | float32 | user's balance |
+
+The resulting translation to a dataclass would be the following:
+
+```python
+from bytechomp import Reader, dataclass  # using re-export from within bytechomp
+from bytechomp.datatypes import F32
+
+@dataclass
+class UserState:
+    user_id: int
+    balance: F32
+```
+
+When parsing messages that contain other messages, you will need to be aware of how the embedded messages are contained and how the resulting memory layout will look for the container message as whole. Since the container message is still represented as one set of continuous bytes, nested classes in bytechomp are constructed using a depth first search of the contained fields in nested structures to build out a flattened parsing pattern for Python's `struct` module.
+
+Consider the following structures:
+
+```python
+from bytechomp import Reader, dataclass, Annotated  # using re-export from within bytechomp
+from bytechomp.datatypes import F32
+
+@dataclass
+class UserState:
+    user_id: int
+    balance: F32
+
+@dataclass
+class Transaction:
+    amount: F32
+    sender: int
+    receiver: int
+
+@dataclass
+class User:
+    user_state: UserState
+    recent_transactions: Annotated[list[Transaction], 3]
+```
+
+The `User` message would correspond to the following memory layout:
+
+```
+uint64, float32, float32, int64, int64, float32, int64, int64, float32, int64, int64
+```
+
 ## Additional Notes
 
-- uses undocumented reflection API
+This package is based on a mostly undocumented feature in standard implementation of CPython. This is the ability to inspect the type information generic parameters via the `self.__orig_class__.__args__` structures. The information in this structure is only populated after initialization (hence the need for the `allocate()` method when instantiated a `Reader` object). Should this behavior change in future versions of Python, `bytechomp` will adapt accordingly. For now, it will stay away from passing a type object as a argument to initialization because that just seems hacky.
