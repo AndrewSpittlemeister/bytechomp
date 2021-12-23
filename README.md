@@ -78,8 +78,39 @@ def main() -> None:
                 print(msg_bundle)
 ```
 
-### Reader API
+The `Reader` object uses Python's built-in [generics](https://docs.python.org/3/library/typing.html#generics) determine the dataclass used when parsing.
 
+```python
+from bytechomp import Reader
+
+@dataclass
+class MyStruct:
+    timestamp: float
+    identity: int
+
+# instantiate a reader
+reader = Reader[MyStruct]().allocate()
+
+# add data to the internal buffer
+reader.feed(stream.read(512))
+
+# check if enough data is present to build
+print(reader.is_complete())
+
+# add via the bitshift method
+reader << stream.read(512)
+
+# check via bool magic method
+bool(reader)
+
+# combine alternative methods
+if reader << stream.read(512):
+    # construct dataclass
+    my_struct = reader.build()
+
+# clear internal byte buffer
+reader.clear()
+```
 
 ## How does this work?
 
@@ -136,3 +167,8 @@ uint64, float32, float32, int64, int64, float32, int64, int64, float32, int64, i
 ## Additional Notes
 
 This package is based on a mostly undocumented feature in standard implementation of CPython. This is the ability to inspect the type information generic parameters via the `self.__orig_class__.__args__` structures. The information in this structure is only populated after initialization (hence the need for the `allocate()` method when instantiated a `Reader` object). Should this behavior change in future versions of Python, `bytechomp` will adapt accordingly. For now, it will stay away from passing a type object as a argument to initialization because that just seems hacky.
+
+**Future Improvements:**
+- A similar `Writer` class
+- Perhaps allowing for parameterized fields to reference previously declared fields (i.e. allowing a list of size `n` where `n` is the previous field)
+- Allow declaring value restraints on fields
