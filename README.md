@@ -1,5 +1,9 @@
 # bytechomp
 
+[![build](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/python-package.yml)
+[![PyPI Version](https://img.shields.io/pypi/v/bytechomp.svg)](https://pypi.org/project/bytechomp/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/bytechomp.svg)](https://pypi.org/project/bytechomp/)
+
 > *A pure python, declarative custom binary protocol parser using dataclasses and type hinting.*
 
 `bytechomp` leverages Python's type hinting system at runtime to build binary protocol parsing schemas from dataclass implementations. Deserialization of the binary data is now abstracted away by `bytechomp`, leaving you to work in the land of typed and structured data.
@@ -169,6 +173,6 @@ uint64, float32, float32, int64, int64, float32, int64, int64, float32, int64, i
 This package is based on a mostly undocumented feature in standard implementation of CPython. This is the ability to inspect the type information generic parameters via the `self.__orig_class__.__args__` structures. The information in this structure is only populated after initialization (hence the need for the `allocate()` method when instantiated a `Reader` object). Should this behavior change in future versions of Python, `bytechomp` will adapt accordingly. For now, it will stay away from passing a type object as a argument to initialization because that just seems hacky.
 
 **Future Improvements:**
-- A similar `Writer` class
+- A similar serialization capabilities
 - Perhaps allowing for parameterized fields to reference previously declared fields (i.e. allowing a list of size `n` where `n` is the previous field)
 - Allow declaring value restraints on fields
