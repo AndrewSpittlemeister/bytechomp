@@ -200,7 +200,7 @@ def resolve_basic_type(
         int | float | bytes | str: Pythonic parsed value.
     """
 
-    if isinstance(arg, element.python_type):
+    if element.python_type is not None and isinstance(arg, element.python_type):
         return arg
     if isinstance(arg, bytes) and element.python_type is str:
         return arg.decode("utf-8")
@@ -228,10 +228,11 @@ def build_structure(
     """
 
     cls_type = description.get("__struct_type__")
-    # if not isinstance(cls_type, type):
-    if cls_type is not None and type(cls_type) != type:
+    if cls_type is not None and not isinstance(cls_type, type):
         raise Exception("lost struct type information in description")
-    cls_args = {}
+    if cls_type is None:
+        raise Exception("unable to find type information in description")
+    cls_args: dict[str, Any] = {}
     # print(f"constructing type {cls_type}")
 
     for name, root_element in filter(
@@ -240,7 +241,7 @@ def build_structure(
         if isinstance(root_element, BasicParsingElement):
             cls_args[name] = resolve_basic_type(args.pop(0), root_element)
         elif isinstance(root_element, list):
-            list_element = []
+            list_element: list[Any] = []
             for sub_element in root_element:
                 # sub elements can only be a elementary data types or other dataclasses
                 if isinstance(sub_element, BasicParsingElement):
