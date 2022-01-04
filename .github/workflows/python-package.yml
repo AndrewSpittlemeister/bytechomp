@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install black pylint pytest bandit mypy
+        python -m pip install black pylint pytest bandit mypy poetry
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with black & pylint
       run: |
@@ -39,6 +39,9 @@ jobs:
     - name: Security check with Bandit
       run: |
         bandit -r bytechomp
+    - name: Build with Poetry
+      run: |
+        poetry build --format=wheel
 #     - name: Test with pytest
 #       run: |
 #         pytest
