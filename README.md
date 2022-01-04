@@ -1,6 +1,6 @@
 # bytechomp
 
-[![build](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/python-package.yml)
+[![ci](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/ci.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/bytechomp.svg)](https://pypi.org/project/bytechomp/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/bytechomp.svg)](https://pypi.org/project/bytechomp/)
 
