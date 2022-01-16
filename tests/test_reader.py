@@ -34,7 +34,7 @@ class BasicMessage:
     float_native: float
 
 
-def test_basic_datatypes() -> None:
+def test_read_basic_datatypes() -> None:
     reader = Reader[BasicMessage]().allocate()
 
     # build struct pattern
@@ -52,6 +52,7 @@ def test_basic_datatypes() -> None:
     pattern += TYPE_TO_TAG[F64]
     pattern += TYPE_TO_TAG[int]
     pattern += TYPE_TO_TAG[float]
+    assert pattern == "@BHIQbhiqefdQd"
 
     # define values and build binary data
     values = (1, 2, 3, 4, 5, 6, 7, 8, 9.0, 10.0, 11.0, 12, 13.0)
@@ -98,3 +99,36 @@ def test_basic_datatypes() -> None:
     assert msg.int_native == 12
     assert isinstance(msg.float_native, float)
     assert msg.float_native == 13.0
+
+
+@dataclass
+class StringMessage:
+    data: Annotated[str, 8]
+
+
+def test_read_string_data() -> None:
+    reader = Reader[StringMessage]().allocate()
+
+    # build struct pattern
+    pattern = ByteOrder.NATIVE.to_pattern()
+    pattern += f"8s"
+    assert pattern == "@8s"
+
+    # build message
+    data = struct.pack(pattern, "12345678".encode())
+
+    # add to the reader in a stream-like way
+    for i in range(len(data)):
+        # should not be complete yet
+        assert not reader.is_complete()
+        # add the data
+        reader.feed(data[i:i+1])
+
+    # should be complete now
+    assert reader.is_complete()
+
+    # build the dataclass
+    msg = reader.build()
+    assert isinstance(msg, StringMessage)
+    assert isinstance(msg.data, str)
+    assert msg.data == "12345678"
