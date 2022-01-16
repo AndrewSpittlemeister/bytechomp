@@ -1,24 +1,10 @@
 """
-bytechomp.datatypes
+bytechomp.datatypes.declarations
 """
 
-from typing import NewType, Final, Union
+from typing import NewType, Final
 
-
-### Elementary Data Types ##########################################################################
-
-PAD = NewType("PAD", int)
-U8 = NewType("U8", int)
-U16 = NewType("U16", int)
-U32 = NewType("U32", int)
-U64 = NewType("U64", int)
-I8 = NewType("I8", int)
-I16 = NewType("I16", int)
-I32 = NewType("I32", int)
-I64 = NewType("I64", int)
-F16 = NewType("F16", float)
-F32 = NewType("F32", float)
-F64 = NewType("F64", float)
+from bytechomp.datatypes.declarations import *  # pylint: disable=wildcard-import
 
 ELEMENTARY_TYPE = type | NewType
 ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [  # type: ignore
@@ -38,10 +24,6 @@ ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [  # type: ignore
     float,
 ]
 
-####################################################################################################
-
-### Data Type Lookup Tables ########################################################################
-
 TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {  # type: ignore
     PAD: "x",
     U8: "B",
@@ -59,7 +41,7 @@ TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {  # type: ignore
     float: "d",
 }
 
-TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, Union[type, None]]] = {  # type: ignore
+TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type | None]] = {  # type: ignore
     PAD: None,
     U8: int,
     U16: int,
@@ -92,5 +74,3 @@ TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {  # type: ignore
     int: 8,
     float: 8,
 }
-
-####################################################################################################

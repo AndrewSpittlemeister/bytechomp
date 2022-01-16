@@ -8,7 +8,7 @@ from dataclasses import dataclass, is_dataclass, fields, MISSING
 from collections import OrderedDict
 import inspect
 
-from bytechomp.datatypes import (
+from bytechomp.datatypes.lookups import (
     ELEMENTARY_TYPE,
     ELEMENTARY_TYPE_LIST,
     TYPE_TO_PYTYPE,
