@@ -3,6 +3,7 @@
 [![ci](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/ci.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/bytechomp.svg)](https://pypi.org/project/bytechomp/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/bytechomp.svg)](https://pypi.org/project/bytechomp/)
+![Lines of Code](https://tokei.rs/b1/github/AndrewSpittlemeister/bytechomp?category=code)
 
 > *A pure python, declarative custom binary protocol parser using dataclasses and type hinting.*
 
