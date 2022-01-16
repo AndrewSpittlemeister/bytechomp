@@ -31,7 +31,104 @@ or Git for the latest unreleased code:
 pip install https://github.com/AndrewSpittlemeister/bytechomp.git@main
 ```
 
-## Example Usage
+## Reader API
+
+The `Reader` class uses Python's built-in [generics](https://docs.python.org/3/library/typing.html#generics) determine the dataclass used when parsing. This dataclass is defined by the user to mimic the binary protocol. Once instantiated, the `Reader` class can be fed `bytes` and used to construct the dataclass when ready. There are various ways to accomplish this with the `Reader` class:
+
+```python
+from dataclasses import dataclass
+
+from bytechomp import Reader
+
+@dataclass
+class MyStruct:
+    timestamp: float
+    identity: int
+
+# instantiate a reader
+reader = Reader[MyStruct]().allocate()
+
+# add data to the internal buffer
+reader.feed(stream.read(512))
+
+# check if enough data is present to build
+print(reader.is_complete())
+
+# add via the bitshift method
+reader << stream.read(512)
+
+# check via bool magic method
+bool(reader)
+
+# combine alternative methods
+if reader << stream.read(512):
+    # construct dataclass
+    my_struct = reader.build()
+
+# clear internal byte buffer
+reader.clear()
+
+# use the iterator API
+simulated_byte_iterator = [b"a"] * 10
+for my_struct in reader.iter(simulated_byte_iterator):
+    print(my_struct)
+```
+
+## Supported Type Fields
+Fields on the dataclasses can be integers, floats, strings, bytes, lists, or other dataclasses. Python-native `int` and `float` represent 64-bit variants. Other sizes can be imported from `bytechomp`:
+
+```python
+from bytechomp.datatypes import (
+    U8,  # 8-bit unsigned integer
+    U16,  # 16-bit unsigned integer
+    U32,  # 32-bit unsigned integer
+    U64,  # 64-bit unsigned integer
+    I8,  # 8-bit signed integer
+    I16,  # 16-bit signed integer
+    I32,  # 32-bit signed integer
+    I64,  # 64-bit signed integer
+    F16,  # 16-bit float
+    F32,  # 32-bit float
+    F64,  # 64-bit float
+)
+```
+
+Although these allow a `Reader` to parse a field of a custom size, the resulting value populated in a dataclass field will always be the python-natives `int` or `float`.
+
+Repeated fields like `bytes`, `str`, and `list` require the use of Python's `typing.Annotated` to allow defining a length.
+
+```python
+from bytechomp import Annotated, dataclass  # re-exported by bytechomp
+
+@dataclass
+class Message:
+    name: Annotated[str, 10]
+    identity: Annotated[bytes, 10]
+    flags: Annotated[list[int], 5]
+```
+
+Finally, `list` fields can contain any other supported datatype, including other dataclass structures to handle complex, nested protocols.
+
+## Byte Ordering
+Byte default the byte-ordering is set to the machine's native format, but can be changed:
+
+```python
+from bytechomp import Reader, ByteOrder, dataclass
+
+@dataclass
+class MyStruct:
+    timestamp: float
+    identity: int
+
+# use native
+reader = Reader[MyStruct](ByteOrder.NATIVE).allocate()
+# use little endian
+reader = Reader[MyStruct](ByteOrder.LITTLE).allocate()
+# use big endian
+reader = Reader[MyStruct](ByteOrder.BIG).allocate()
+```
+
+## A Longer Example
 
 ```python
 from typing import Annotated
@@ -82,40 +179,6 @@ def main() -> None:
                 print(msg_bundle)
 ```
 
-The `Reader` object uses Python's built-in [generics](https://docs.python.org/3/library/typing.html#generics) determine the dataclass used when parsing.
-
-```python
-from bytechomp import Reader
-
-@dataclass
-class MyStruct:
-    timestamp: float
-    identity: int
-
-# instantiate a reader
-reader = Reader[MyStruct]().allocate()
-
-# add data to the internal buffer
-reader.feed(stream.read(512))
-
-# check if enough data is present to build
-print(reader.is_complete())
-
-# add via the bitshift method
-reader << stream.read(512)
-
-# check via bool magic method
-bool(reader)
-
-# combine alternative methods
-if reader << stream.read(512):
-    # construct dataclass
-    my_struct = reader.build()
-
-# clear internal byte buffer
-reader.clear()
-```
-
 ## How does this work?
 
 While a binary stream is usually represented as a flat, continuous data, `bytechomp` can be used as a structural abstraction over this data. Therefore, if there was a message with the following structure for a message called `UserState`:
@@ -128,7 +191,7 @@ While a binary stream is usually represented as a flat, continuous data, `bytech
 The resulting translation to a dataclass would be the following:
 
 ```python
-from bytechomp import Reader, dataclass  # using re-export from within bytechomp
+from bytechomp import Reader, dataclass
 from bytechomp.datatypes import F32
 
 @dataclass
@@ -176,3 +239,4 @@ This package is based on a mostly undocumented feature in standard implementatio
 - A similar serialization capabilities
 - Perhaps allowing for parameterized fields to reference previously declared fields (i.e. allowing a list of size `n` where `n` is the previous field)
 - Allow declaring value restraints on fields
+- Allow for enums to be generated for integer fields
