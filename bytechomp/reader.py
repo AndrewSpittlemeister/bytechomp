@@ -3,7 +3,7 @@ bytechomp.reader
 """
 
 from __future__ import annotations
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Iterable, Iterator
 from dataclasses import is_dataclass
 from collections import OrderedDict
 from struct import Struct
@@ -42,7 +42,7 @@ class Reader(Generic[T]):
     """A binary protocol reader.
 
     Args:
-        Generic (T): The dataclass type that defines the protocol.
+        Generic (T): The dataclass type that defines the binary protocol.
     """
 
     def __init__(self, byte_order: ByteOrder = ByteOrder.NATIVE) -> None:
@@ -140,6 +140,26 @@ class Reader(Generic[T]):
                 list(self.__struct.unpack(struct_bytes)), self.__data_description
             )
         return None
+
+    def iter(self, byte_iterator: Iterable[bytes]) -> Iterator[T]:
+        """Allows the reader to use a stream of bytes to yield the constructed dataclasses as an
+            iterator.
+
+        Args:
+            byte_iterator (Iterable[bytes]): Byte stream.
+
+        Yields:
+            Iterator[T]: Yielded dataclass iterator.
+        """
+
+        for chunk in byte_iterator:
+            self.__data += chunk
+            if self.is_complete():
+                struct_bytes = self.__data[: self.__struct.size]
+                self.__data = self.__data[self.__struct.size :]
+                yield build_structure(
+                    list(self.__struct.unpack(struct_bytes)), self.__data_description
+                )
 
     def clear(self) -> None:
         """Clears the data in the internal buffer."""
