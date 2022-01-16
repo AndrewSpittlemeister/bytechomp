@@ -7,9 +7,9 @@ from typing import Generic, TypeVar, Iterable, Iterator
 from dataclasses import is_dataclass
 from collections import OrderedDict
 from struct import Struct
-from enum import Enum
 import inspect
 
+from bytechomp.byte_order import ByteOrder
 from bytechomp.data_descriptor import (
     build_data_description,
     build_data_pattern,
@@ -17,25 +17,6 @@ from bytechomp.data_descriptor import (
 )
 
 T = TypeVar("T")  # pylint: disable=invalid-name
-
-
-class ByteOrder(Enum):
-    """Strict enumerations for byte ordering options."""
-
-    NATIVE = 1
-    BIG = 2
-    LITTLE = 3
-
-    def to_pattern(self) -> str:
-        """Returns the corresponding struct pattern."""
-
-        if self == ByteOrder.NATIVE:
-            return "@"
-        if self == ByteOrder.BIG:
-            return ">"
-        if self == ByteOrder.LITTLE:
-            return "<"
-        raise Exception("invalid enumeration value")
 
 
 class Reader(Generic[T]):
