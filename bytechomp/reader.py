@@ -117,6 +117,7 @@ class Reader(Generic[T]):
         if self.is_complete():
             struct_bytes = self.__data[: self.__struct.size]
             self.__data = self.__data[self.__struct.size :]
+            # print(f"unpacked: {self.__struct.unpack(struct_bytes)}")
             return build_structure(
                 list(self.__struct.unpack(struct_bytes)), self.__data_description
             )

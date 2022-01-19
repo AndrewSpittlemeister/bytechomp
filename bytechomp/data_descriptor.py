@@ -213,6 +213,7 @@ def build_structure(
         Any: Instantiated dataclass
     """
 
+    # print(f"dat_args: {args}")
     cls_type = description.get("__struct_type__")
     if cls_type is not None and not isinstance(cls_type, type):
         raise Exception("lost struct type information in description")
@@ -231,7 +232,7 @@ def build_structure(
             for sub_element in root_element:
                 # sub elements can only be a elementary data types or other dataclasses
                 if isinstance(sub_element, BasicParsingElement):
-                    resolve_basic_type(args.pop(0), sub_element)
+                    list_element.append(resolve_basic_type(args.pop(0), sub_element))
                 elif isinstance(sub_element, OrderedDict):
                     list_element.append(build_structure(args, sub_element))
                 else:
@@ -242,4 +243,5 @@ def build_structure(
         else:
             raise Exception(f"invalid element type found ({name}: {type(root_element)})")
 
+    # print(f"cls_args: {cls_args}")
     return cls_type(**cls_args)
