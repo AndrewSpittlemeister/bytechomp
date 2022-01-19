@@ -381,4 +381,4 @@ class NestedListMessage:
 def test_read_nested_list_data() -> None:
     with pytest.raises(Exception) as e:
         reader = Reader[NestedListMessage]().allocate()
-    assert str(e.value).startswith("unsupported list type")\
+    assert str(e.value).startswith("unsupported list type")
