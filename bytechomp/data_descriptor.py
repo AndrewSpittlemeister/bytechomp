@@ -91,7 +91,7 @@ def build_data_description(
                 object_description[field.name] = BasicParsingElement(
                     parsing_type=bytes,
                     python_type=bytes,
-                    parser_tag=f"{length}p",
+                    parser_tag=f"{length}s",
                     length=length,
                     default_value=None if field.default == MISSING else field.default,
                 )

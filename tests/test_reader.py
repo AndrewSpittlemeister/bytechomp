@@ -110,12 +110,11 @@ def test_read_string_data() -> None:
     reader = Reader[StringMessage]().allocate()
 
     # build struct pattern
-    pattern = ByteOrder.NATIVE.to_pattern()
-    pattern += f"8s"
+    pattern = f"{ByteOrder.NATIVE.to_pattern()}8s"
     assert pattern == "@8s"
 
     # build message
-    data = struct.pack(pattern, "12345678".encode())
+    data = struct.pack(pattern, "12345678".encode("utf-8"))
 
     # add to the reader in a stream-like way
     for i in range(len(data)):
@@ -132,3 +131,35 @@ def test_read_string_data() -> None:
     assert isinstance(msg, StringMessage)
     assert isinstance(msg.data, str)
     assert msg.data == "12345678"
+
+
+@dataclass
+class BytesMessage:
+    data: Annotated[bytes, 8]
+
+
+def test_read_bytes_data() -> None:
+    reader = Reader[BytesMessage]().allocate()
+
+    # build struct pattern
+    pattern = f"{ByteOrder.NATIVE.to_pattern()}8s"
+    assert pattern == "@8s"
+
+    # build message
+    data = struct.pack(pattern, "12345678".encode("utf-8"))
+
+    # add to the reader in a stream-like way
+    for i in range(len(data)):
+        # should not be complete yet
+        assert not reader.is_complete()
+        # add the data
+        reader.feed(data[i:i+1])
+
+    # should be complete now
+    assert reader.is_complete()
+
+    # build the dataclass
+    msg = reader.build()
+    assert isinstance(msg, BytesMessage)
+    assert isinstance(msg.data, bytes)
+    assert msg.data == b"12345678"
