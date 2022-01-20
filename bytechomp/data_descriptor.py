@@ -4,30 +4,17 @@ bytechomp.data_descriptor
 
 from __future__ import annotations
 from typing import Annotated, Any, get_origin, get_args
-from dataclasses import dataclass, is_dataclass, fields, MISSING
+from dataclasses import is_dataclass, fields, MISSING
 from collections import OrderedDict
 import inspect
 
 from bytechomp.datatypes.lookups import (
-    ELEMENTARY_TYPE,
     ELEMENTARY_TYPE_LIST,
     TYPE_TO_PYTYPE,
     TYPE_TO_TAG,
     TYPE_TO_LENGTH,
 )
-
-
-@dataclass
-class BasicParsingElement:
-    """Describes a node in the type tree."""
-
-    parsing_type: ELEMENTARY_TYPE | str | bytes  # type: ignore
-    python_type: type | None
-    parser_tag: str
-    length: int
-    default_value: int | float | str | bytes | None = None
-    raw_data: bytes = b""
-    parsed_value: int | float | str | bytes | None = None
+from bytechomp.basic_parsing_element import BasicParsingElement
 
 
 def build_data_description(
