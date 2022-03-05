@@ -31,7 +31,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with black & pylint
       run: |
-        pylint --max-line-length=100 bytechomp
+        pylint --max-line-length=100 bytechomp --disable=duplicate-code
         black --verbose --check --diff --line-length=100 bytechomp
     - name: Type check with Mypy
       run: |
