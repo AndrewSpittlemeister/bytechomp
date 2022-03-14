@@ -7,6 +7,7 @@ from typing import Annotated, get_origin, get_args
 from dataclasses import is_dataclass, fields
 
 from bytechomp.datatypes.lookups import ELEMENTARY_TYPE_LIST, TYPE_TO_TAG
+from bytechomp.byte_order import ByteOrder
 
 
 def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | bytes]]:
@@ -94,7 +95,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
     return pattern, values
 
 
-def serialize(data_object: type) -> bytes:
+def serialize(data_object: type, byte_order: ByteOrder = ByteOrder.NATIVE) -> bytes:
     """Serializes a completely populated dataclass into a byte string according to the bytechomp
         serialization rules.
 
@@ -109,4 +110,5 @@ def serialize(data_object: type) -> bytes:
         raise TypeError("provided object must be a valid dataclass")
 
     pattern, values = flatten_dataclass(data_object)
+    pattern = byte_order.to_pattern() + pattern
     return struct.pack(pattern, *values)

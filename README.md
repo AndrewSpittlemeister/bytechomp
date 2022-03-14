@@ -5,9 +5,9 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/bytechomp.svg)](https://pypi.org/project/bytechomp/)
 ![Lines of Code](https://tokei.rs/b1/github/AndrewSpittlemeister/bytechomp?category=code)
 
-> *A pure python, declarative custom binary protocol parser using dataclasses and type hinting.*
+> *A pure python, declarative custom binary protocol parser & generator using dataclasses and type hinting.*
 
-`bytechomp` leverages Python's type hinting system at runtime to build binary protocol parsing schemas from dataclass implementations. Deserialization of the binary data is now abstracted away by `bytechomp`, leaving you to work in the land of typed and structured data.
+`bytechomp` leverages Python's type hinting system at runtime to build binary protocol parsing schemas from dataclass implementations. Deserialization/Serialization of the binary data is now abstracted away by `bytechomp`, leaving you to work in the land of typed and structured data.
 
 **Features:**
 - [x] Pure Python
@@ -17,6 +17,7 @@
 - [x] Supports `bytes` and `str` fields of known length
 - [x] Supports `list` types for repeated, continuous fields of known length
 - [x] Supports nested structures
+- [x] Supports serialization of populated data structures
 
 ## Installation
 
@@ -59,7 +60,7 @@ print(reader.is_complete())
 reader << stream.read(512)
 
 # check via bool magic method
-bool(reader)
+print(bool(reader))
 
 # combine alternative methods
 if reader << stream.read(512):
@@ -73,6 +74,17 @@ reader.clear()
 simulated_byte_iterator = [b"a"] * 10
 for my_struct in reader.iter(simulated_byte_iterator):
     print(my_struct)
+```
+
+## Serialization API
+Similar to the `Reader`, serialization of data is accomplished through defining dataclasses in the same manner.
+
+```python
+from bytechomp import serialize
+
+my_struct = MyStruct(1.1, 15)
+
+serialized_struct: bytes = serialize(my_struct)
 ```
 
 ## Supported Type Fields
@@ -114,28 +126,30 @@ Finally, `list` fields can contain any other supported datatype, including other
 Byte default the byte-ordering is set to the machine's native format, but can be changed:
 
 ```python
-from bytechomp import Reader, ByteOrder, dataclass
+from bytechomp import Reader, ByteOrder, dataclass, serialize
 
 @dataclass
 class MyStruct:
     timestamp: float
     identity: int
 
-# use native
+# use native (the default)
 reader = Reader[MyStruct](ByteOrder.NATIVE).allocate()
+data = serialize(MyStruct(1.1, 15), ByteOrder.NATIVE)
+
 # use little endian
 reader = Reader[MyStruct](ByteOrder.LITTLE).allocate()
+data = serialize(MyStruct(1.1, 15), ByteOrder.LITTLE)
+
 # use big endian
 reader = Reader[MyStruct](ByteOrder.BIG).allocate()
+data = serialize(MyStruct(1.1, 15), ByteOrder.BIG)
 ```
 
 ## A Longer Example
 
 ```python
-from typing import Annotated
-from dataclasses import dataclass
-
-from bytechomp import Reader
+from bytechomp import Reader, dataclass, Annotated, serialize
 from bytechomp.datatypes import U16, F32
 
 
@@ -178,6 +192,9 @@ def main() -> None:
                 # parse the stream and create your typed data structure!
                 msg_bundle = reader.build()
                 print(msg_bundle)
+
+                # re-serialize this data
+                print(f"serialized data: {serialize(msg_bundle)}")
 ```
 
 ## How does this work?
@@ -237,7 +254,6 @@ uint64, float32, float32, int64, int64, float32, int64, int64, float32, int64, i
 This package is based on a mostly undocumented feature in standard implementation of CPython. This is the ability to inspect the type information generic parameters via the `self.__orig_class__.__args__` structures. The information in this structure is only populated after initialization (hence the need for the `allocate()` method when instantiated a `Reader` object). Should this behavior change in future versions of Python, `bytechomp` will adapt accordingly. For now, it will stay away from passing a type object as a argument to initialization because that just seems hacky.
 
 **Future Improvements:**
-- A similar serialization capabilities
 - Perhaps allowing for parameterized fields to reference previously declared fields (i.e. allowing a list of size `n` where `n` is the previous field)
 - Allow declaring value restraints on fields
 - Allow for enums to be generated for integer fields
