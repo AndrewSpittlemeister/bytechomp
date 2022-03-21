@@ -173,7 +173,3 @@ def test_byte_order_little_big() -> None:
     obj = BasicMessage(*values)
 
     assert serialize(obj, ByteOrder.LITTLE) != data
-
-
-# def test_basic_field_validation() -> None:
-

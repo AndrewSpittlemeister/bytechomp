@@ -6,7 +6,7 @@ import struct
 from typing import Annotated, get_origin, get_args
 from dataclasses import is_dataclass, fields
 
-from bytechomp.datatypes.lookups import ELEMENTARY_TYPE_LIST, TYPE_TO_TAG
+from bytechomp.datatypes.lookups import ELEMENTARY_TYPE_LIST, TYPE_TO_TAG, TYPE_TO_PYTYPE
 from bytechomp.byte_order import ByteOrder
 
 
@@ -20,6 +20,9 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
         tuple[str, list[int | float | str | bytes]]: (pattern string, values list)
     """
     # pylint: disable=too-many-branches
+    # pylint: disable=line-too-long
+    # pylint: disable=too-many-nested-blocks
+    # pylint: disable=too-many-statements
 
     if not is_dataclass(data_object):
         raise TypeError("provided object must be a valid dataclass")
@@ -28,13 +31,24 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
     values: list[int | float | str | bytes] = []
 
     for field in fields(data_object):
-        field_value = getattr(data_object, field.name)
+        val = getattr(data_object, field.name)
+        val_t = type(val)
 
         if field.type in ELEMENTARY_TYPE_LIST:
+            if not isinstance(val, TYPE_TO_PYTYPE[field.type]):  # type: ignore
+                raise TypeError(
+                    f"{field.name} field contains {val_t} type but requires {field.type}"
+                )
+
             pattern += TYPE_TO_TAG[field.type]
-            values.append(field_value)
+            values.append(val)
         elif is_dataclass(field.type):
-            nested_pattern, nested_values = flatten_dataclass(field_value)
+            if not isinstance(val, val_t):
+                raise TypeError(
+                    f"{field.name} field contains {val_t} type but requires {field.type}"
+                )
+
+            nested_pattern, nested_values = flatten_dataclass(val)
             pattern += nested_pattern
             values.extend(nested_values)
         elif get_origin(field.type) == Annotated:
@@ -53,16 +67,43 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
 
             # deal with string type
             if arg_type == str:
+                if not isinstance(val, str):
+                    raise TypeError(
+                        f"{field.name} field contains {val_t} type but requires {field.type}"
+                    )
+                if length != len(val):
+                    raise TypeError(
+                        f"{field.name} string field has a length of {len(val)} but requires a length of {length}"
+                    )
+
                 pattern += f"{length}s"
-                values.append(field_value.encode())
+                values.append(val.encode())
 
             # deal with bytes type
             elif arg_type == bytes:
+                if not isinstance(val, bytes):
+                    raise TypeError(
+                        f"{field.name} field contains {val_t} type but requires {field.type}"
+                    )
+                if length != len(val):
+                    raise TypeError(
+                        f"{field.name} bytes field has a length of {len(val)} but requires a length of {length}"
+                    )
+
                 pattern += f"{length}p"
-                values.append(field_value)
+                values.append(val)
 
             # deal with list type
             elif get_origin(arg_type) == list:
+                if not isinstance(val, list):
+                    raise TypeError(
+                        f"{field.name} field contains {val_t} type but requires {field.type}"
+                    )
+                if length != len(val):
+                    raise TypeError(
+                        f"{field.name} list field has a length of {len(val)} but requires a length of {length}"
+                    )
+
                 list_type_args = get_args(arg_type)
 
                 if len(list_type_args) != 1:
@@ -73,11 +114,24 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
                 list_type = list_type_args[0]
 
                 if list_type in ELEMENTARY_TYPE_LIST:
+                    element_type = TYPE_TO_PYTYPE[list_type]
+                    for field_element in val:
+                        if not isinstance(field_element, element_type):  # type: ignore
+                            raise TypeError(
+                                f"{field.name} field contains {val_t} type but requires {field.type}"
+                            )
+
                     pattern += TYPE_TO_TAG[list_type] * length
-                    values.extend(field_value)
+                    values.extend(val)
                 elif is_dataclass(list_type):
-                    for element in field_value:
-                        nested_pattern, nested_values = flatten_dataclass(element)
+                    element_type = list_type
+                    for field_element in val:
+                        if not isinstance(field_element, element_type):  # type: ignore
+                            raise TypeError(
+                                f"{field.name} field contains {val_t} type but requires {field.type}"
+                            )
+
+                        nested_pattern, nested_values = flatten_dataclass(field_element)
                         pattern += nested_pattern
                         values.extend(nested_values)
                 else:
