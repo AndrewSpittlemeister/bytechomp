@@ -34,7 +34,7 @@ class Reader(Generic[T]):
         self.__data_pattern: str = ""
         self.__struct = Struct(self.__data_pattern)
 
-    def allocate(self) -> Reader:
+    def allocate(self) -> Reader[T]:
         """Allocates the reader with a tokenized description of the protocol defined by the type T.
 
         Returns:
