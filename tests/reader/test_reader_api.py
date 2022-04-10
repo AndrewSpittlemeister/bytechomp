@@ -1,4 +1,5 @@
 import struct
+from random import randbytes, randint
 
 from bytechomp import Reader, dataclass, Annotated, ByteOrder
 from bytechomp.datatypes import (
@@ -556,3 +557,16 @@ def test_reader_export() -> None:
     assert reader.export() == b"asdf"
     assert not reader.is_complete()
     assert reader.export() == b""
+
+
+def test_reader_len() -> None:
+    reader = Reader[BasicMessage]().allocate()
+    assert len(reader) == 0
+
+    data = randbytes(randint(5, 100))
+
+    reader << data
+    assert len(reader) == len(data)
+
+    reader.clear()
+    assert len(reader) == 0

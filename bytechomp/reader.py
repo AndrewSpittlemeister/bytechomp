@@ -107,6 +107,15 @@ class Reader(Generic[T]):
 
         return self.is_complete()
 
+    def __len__(self) -> int:
+        """Returns the size of the internal buffer.
+
+        Returns:
+            int: Size of internal buffer.
+        """
+
+        return len(self.__data)
+
     def build(self) -> T | None:
         """Constructs the class T from the binary data collected in the internal buffer.
 
