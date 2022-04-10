@@ -547,3 +547,12 @@ def test_reader_clear() -> None:
             reader.clear()
 
     assert not reader.is_complete()
+
+
+def test_reader_export() -> None:
+    reader = Reader[BasicMessage]().allocate()
+
+    reader.feed(b"asdf")
+    assert reader.export() == b"asdf"
+    assert not reader.is_complete()
+    assert reader.export() == b""

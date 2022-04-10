@@ -147,3 +147,14 @@ class Reader(Generic[T]):
         """Clears the data in the internal buffer."""
 
         self.__data = b""
+
+    def export(self) -> bytes:
+        """Exports the data from the internal buffer.
+
+        Returns:
+            bytes: All bytes contained in the internal buffer
+        """
+
+        data = self.__data
+        self.__data = b""
+        return data
