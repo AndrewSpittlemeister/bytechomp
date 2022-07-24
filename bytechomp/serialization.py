@@ -90,7 +90,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                         f"{field.name} bytes field has a length of {len(val)} but requires a length of {length}"
                     )
 
-                pattern += f"{length}p"
+                pattern += f"{length}s"
                 values.append(val)
 
             # deal with list type
@@ -165,4 +165,5 @@ def serialize(data_object: type, byte_order: ByteOrder = ByteOrder.NATIVE) -> by
 
     pattern, values = flatten_dataclass(data_object)
     pattern = byte_order.to_pattern() + pattern
+    # print(f"\nPattern to use '{pattern}' for values to serialize: ", values)
     return struct.pack(pattern, *values)

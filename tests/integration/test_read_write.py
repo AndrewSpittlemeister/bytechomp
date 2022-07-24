@@ -39,10 +39,14 @@ class ComplexMessage:
     float64: F64
     int_native: int
     float_native: float
-    binary: Annotated[bytes, 4]
     repeated: Annotated[list[int], 4]
+    binary: Annotated[bytes, 4]
     nested: NestedMessage
 
+
+@dataclass
+class ByteDataMessage:
+    data: Annotated[bytes, 10]
 
 def test_read_write_loop() -> None:
     original = ComplexMessage(
@@ -59,24 +63,21 @@ def test_read_write_loop() -> None:
         uniform(-10.0, 10.0),
         1,
         uniform(-10.0, 10.0),
-        b"1111",
         [randint(0, 2**64 - 1), randint(0, 2**64 - 1), randint(0, 2**64 - 1), randint(0, 2**64 - 1)],
+        b"1111",
         NestedMessage(1)
     )
 
     data = serialize(original)
 
     reader = Reader[ComplexMessage]().allocate()
-    reader.feed(data)
-    # for i in range(len(data)):
-    #     assert not reader.is_complete()
-    #     reader.feed(data[i:i+1])
+    for i in range(len(data)):
+        assert not reader.is_complete()
+        reader.feed(data[i:i+1])
 
     assert reader.is_complete()
     reconstructed = reader.build()
     assert reconstructed is not None
-
-    print(reconstructed)
 
     assert original.uint8 == reconstructed.uint8
     assert original.uint16 == reconstructed.uint16
@@ -91,6 +92,27 @@ def test_read_write_loop() -> None:
     assert isclose(original.float64, reconstructed.float64, abs_tol=0.00000000000001)
     assert original.int_native == reconstructed.int_native
     assert isclose(original.float_native, reconstructed.float_native)
-    # assert original.binary == reconstructed.binary
+    assert original.binary == reconstructed.binary
     assert original.repeated == reconstructed.repeated
     assert original.nested == reconstructed.nested
+
+
+def test_byte_only_message() -> None:
+    original = ByteDataMessage(
+        data=b"0123456789"
+    )
+
+    data = serialize(original)
+
+    reader = Reader[ByteDataMessage]().allocate()
+    for i in range(len(data)):
+        assert not reader.is_complete()
+        reader.feed(data[i:i+1])
+
+    assert reader.is_complete()
+    reconstructed = reader.build()
+    assert reconstructed is not None
+
+    print(reconstructed)
+
+    assert reconstructed.data == original.data
