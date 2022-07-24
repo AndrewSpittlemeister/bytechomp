@@ -14,7 +14,7 @@
 - [x] Zero Dependencies
 - [x] Uses native type-hinting & dataclasses
 - [x] Supports lower-precision numerics
-- [x] Supports `bytes` and `str` fields of known length
+- [x] Supports `bytes` fields of known length
 - [x] Supports `list` types for repeated, continuous fields of known length
 - [x] Supports nested structures
 - [x] Supports serialization of populated data structures
@@ -108,14 +108,14 @@ from bytechomp.datatypes import (
 
 Although these allow a `Reader` to parse a field of a custom size, the resulting value populated in a dataclass field will always be the python-natives `int` or `float`.
 
-Repeated fields like `bytes`, `str`, and `list` require the use of Python's `typing.Annotated` to allow defining a length.
+Repeated fields like `bytes` and `list` require the use of Python's `typing.Annotated` to allow defining a length.
 
 ```python
 from bytechomp import Annotated, dataclass  # re-exported by bytechomp
 
 @dataclass
 class Message:
-    name: Annotated[str, 10]
+    name: Annotated[bytes, 10]
     identity: Annotated[bytes, 10]
     flags: Annotated[list[int], 5]
 ```
@@ -163,7 +163,6 @@ class Header:
 @dataclass
 class Body:
     unique_id: Annotated[bytes, 5]  # use of typing.Annotated to denote length
-    name: Annotated[str, 64]  # string values are decoded from byte streams too 
     balance: F32
 
 
