@@ -48,9 +48,7 @@ def build_data_description(
             )
         elif inspect.isclass(field.type) and is_dataclass(field.type):
             if field.default != MISSING:
-                raise Exception(
-                    f"cannot have default value on nested types (field: {field.name})"
-                )
+                raise Exception(f"cannot have default value on nested types (field: {field.name})")
             object_description[field.name] = build_data_description(field.type)
         elif get_origin(field.type) == Annotated:
             args = get_args(field.type)
@@ -64,9 +62,7 @@ def build_data_description(
             length = args[1]
 
             if not isinstance(length, int):
-                raise Exception(
-                    "second annotated argument must be an integer to denote length"
-                )
+                raise Exception("second annotated argument must be an integer to denote length")
 
             # # deal with string type
             # if arg_type == str:
@@ -109,26 +105,18 @@ def build_data_description(
                         )
                     ] * length
                 elif inspect.isclass(list_type) and is_dataclass(list_type):
-                    object_description[field.name] = [
-                        build_data_description(list_type)
-                    ] * length
+                    object_description[field.name] = [build_data_description(list_type)] * length
                 else:
-                    raise Exception(
-                        f"unsupported list type: {list_type} (field: {field.name})"
-                    )
+                    raise Exception(f"unsupported list type: {list_type} (field: {field.name})")
 
             else:
-                raise Exception(
-                    f"unsupported annotated type: {arg_type} (field: {field.name})"
-                )
+                raise Exception(f"unsupported annotated type: {arg_type} (field: {field.name})")
         elif field.type in [list, bytes, str]:
             raise Exception(
                 f"annotation needed for list/string/bytes (length required, field: {field.name})"
             )
         else:
-            raise Exception(
-                f"unsupported data type ({field.type}) on field {field.name}"
-            )
+            raise Exception(f"unsupported data type ({field.type}) on field {field.name}")
 
     return object_description
 
@@ -136,10 +124,7 @@ def build_data_description(
 def build_data_pattern(
     description: OrderedDict[
         str,
-        BasicParsingElement
-        | type
-        | list[BasicParsingElement | OrderedDict]
-        | OrderedDict,
+        BasicParsingElement | type | list[BasicParsingElement | OrderedDict] | OrderedDict,
     ]
 ) -> str:
     """Determines a packed data representation using the struct module binary pattern characters.
@@ -174,9 +159,7 @@ def build_data_pattern(
         elif isinstance(root_element, OrderedDict):
             pattern += build_data_pattern(root_element)
         else:
-            raise Exception(
-                f"invalid element type found ({name}: {type(root_element)})"
-            )
+            raise Exception(f"invalid element type found ({name}: {type(root_element)})")
     return pattern
 
 
@@ -203,10 +186,7 @@ def build_structure(
     args: list[int | float | bytes],
     description: OrderedDict[
         str,
-        BasicParsingElement
-        | type
-        | list[BasicParsingElement | OrderedDict]
-        | OrderedDict,
+        BasicParsingElement | type | list[BasicParsingElement | OrderedDict] | OrderedDict,
     ],
 ) -> Any:
     """Constructs an instantiation of the data type described by the description argument.
@@ -251,9 +231,7 @@ def build_structure(
         elif isinstance(root_element, OrderedDict):
             cls_args[name] = build_structure(args, root_element)
         else:
-            raise Exception(
-                f"invalid element type found ({name}: {type(root_element)})"
-            )
+            raise Exception(f"invalid element type found ({name}: {type(root_element)})")
 
     # print(f"cls_args: {cls_args}")
     return cls_type(**cls_args)

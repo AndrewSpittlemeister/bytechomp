@@ -68,9 +68,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
             length = args[1]
 
             if not isinstance(length, int):
-                raise TypeError(
-                    "second annotated argument must be an integer to denote length"
-                )
+                raise TypeError("second annotated argument must be an integer to denote length")
 
             # # deal with string type
             # if arg_type == str:
@@ -142,22 +140,16 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                         pattern += nested_pattern
                         values.extend(nested_values)
                 else:
-                    raise Exception(
-                        f"unsupported list type: {list_type} (field: {field.name})"
-                    )
+                    raise Exception(f"unsupported list type: {list_type} (field: {field.name})")
 
             else:
-                raise Exception(
-                    f"unsupported annotated type: {arg_type} (field: {field.name})"
-                )
+                raise Exception(f"unsupported annotated type: {arg_type} (field: {field.name})")
         elif field.type in [list, bytes]:
             raise Exception(
                 f"annotation needed for list/bytes (length required, field: {field.name})"
             )
         else:
-            raise Exception(
-                f"unsupported data type ({field.type}) on field {field.name}"
-            )
+            raise Exception(f"unsupported data type ({field.type}) on field {field.name}")
 
     return pattern, values
 
