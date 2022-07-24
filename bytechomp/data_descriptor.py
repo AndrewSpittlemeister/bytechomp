@@ -44,7 +44,7 @@ def build_data_description(
                 python_type=TYPE_TO_PYTYPE[field.type],
                 parser_tag=TYPE_TO_TAG[field.type],
                 length=TYPE_TO_LENGTH[field.type],
-                default_value=None if field.default == MISSING else field.default,
+                default_value=None if field.default == MISSING else field.default,  # type: ignore
             )
         elif inspect.isclass(field.type) and is_dataclass(field.type):
             if field.default != MISSING:
@@ -76,12 +76,13 @@ def build_data_description(
 
             # deal with bytes type
             if arg_type == bytes:
+                default_value = None if field.default == MISSING else field.default
                 object_description[field.name] = BasicParsingElement(
                     parsing_type=bytes,
                     python_type=bytes,
                     parser_tag=f"{length}s",
                     length=length,
-                    default_value=None if field.default == MISSING else field.default,
+                    default_value=default_value,  # type: ignore
                 )
 
             # deal with list type
