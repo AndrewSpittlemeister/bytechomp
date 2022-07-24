@@ -63,15 +63,15 @@ def build_data_description(
             if not isinstance(length, int):
                 raise Exception("second annotated argument must be an integer to denote length")
 
-            # deal with string type
-            if arg_type == str:
-                object_description[field.name] = BasicParsingElement(
-                    parsing_type=str,
-                    python_type=str,
-                    parser_tag=f"{length}s",
-                    length=length,
-                    default_value=None if field.default == MISSING else field.default,
-                )
+            # # deal with string type
+            # if arg_type == str:
+            #     object_description[field.name] = BasicParsingElement(
+            #         parsing_type=str,
+            #         python_type=str,
+            #         parser_tag=f"{length}s",
+            #         length=length,
+            #         default_value=None if field.default == MISSING else field.default,
+            #     )
 
             # deal with bytes type
             elif arg_type == bytes:
@@ -163,14 +163,14 @@ def build_data_pattern(
 
 def resolve_basic_type(
     arg: int | float | bytes, element: BasicParsingElement
-) -> int | float | bytes | str:
+) -> int | float | bytes:
     """Returns the value of the element while checking the intended type in the node.
 
     Raises:
         Exception: [description]
 
     Returns:
-        int | float | bytes | str: Pythonic parsed value.
+        int | float | bytes: Pythonic parsed value.
     """
 
     if element.python_type is not None and isinstance(arg, element.python_type):

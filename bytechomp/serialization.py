@@ -10,14 +10,14 @@ from bytechomp.datatypes.lookups import ELEMENTARY_TYPE_LIST, TYPE_TO_TAG, TYPE_
 from bytechomp.byte_order import ByteOrder
 
 
-def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | bytes]]:
+def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]]:
     """Flattens out the dataclass into a pattern and a list of values.
 
     Args:
         data_object (type): Dataclass object.
 
     Returns:
-        tuple[str, list[int | float | str | bytes]]: (pattern string, values list)
+        tuple[str, list[int | float | bytes]]: (pattern string, values list)
     """
     # pylint: disable=too-many-branches
     # pylint: disable=line-too-long
@@ -28,7 +28,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
         raise TypeError("provided object must be a valid dataclass")
 
     pattern: str = ""
-    values: list[int | float | str | bytes] = []
+    values: list[int | float | bytes] = []
 
     for field in fields(data_object):
         val = getattr(data_object, field.name)
@@ -65,19 +65,19 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
             if not isinstance(length, int):
                 raise TypeError("second annotated argument must be an integer to denote length")
 
-            # deal with string type
-            if arg_type == str:
-                if not isinstance(val, str):
-                    raise TypeError(
-                        f"{field.name} field contains {val_t} type but requires {field.type}"
-                    )
-                if length != len(val):
-                    raise TypeError(
-                        f"{field.name} string field has a length of {len(val)} but requires a length of {length}"
-                    )
+            # # deal with string type
+            # if arg_type == str:
+            #     if not isinstance(val, str):
+            #         raise TypeError(
+            #             f"{field.name} field contains {val_t} type but requires {field.type}"
+            #         )
+            #     if length != len(val):
+            #         raise TypeError(
+            #             f"{field.name} string field has a length of {len(val)} but requires a length of {length}"
+            #         )
 
-                pattern += f"{length}s"
-                values.append(val.encode())
+            #     pattern += f"{length}s"
+            #     values.append(val.encode())
 
             # deal with bytes type
             elif arg_type == bytes:
@@ -139,9 +139,9 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | str | 
 
             else:
                 raise Exception(f"unsupported annotated type: {arg_type} (field: {field.name})")
-        elif field.type in [list, bytes, str]:
+        elif field.type in [list, bytes]:
             raise Exception(
-                f"annotation needed for list/string/bytes (length required, field: {field.name})"
+                f"annotation needed for list/bytes (length required, field: {field.name})"
             )
         else:
             raise Exception(f"unsupported data type ({field.type}) on field {field.name}")

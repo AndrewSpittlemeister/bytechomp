@@ -103,36 +103,36 @@ def test_read_basic_datatypes() -> None:
     assert msg.float_native == 13.0
 
 
-@dataclass
-class StringMessage:
-    data: Annotated[str, 8]
+# @dataclass
+# class StringMessage:
+#     data: Annotated[str, 8]
 
 
-def test_read_string_data() -> None:
-    reader = Reader[StringMessage]().allocate()
+# def test_read_string_data() -> None:
+#     reader = Reader[StringMessage]().allocate()
 
-    # build struct pattern
-    pattern = f"{ByteOrder.NATIVE.to_pattern()}8s"
-    assert pattern == "@8s"
+#     # build struct pattern
+#     pattern = f"{ByteOrder.NATIVE.to_pattern()}8s"
+#     assert pattern == "@8s"
 
-    # build message
-    data = struct.pack(pattern, "12345678".encode("utf-8"))
+#     # build message
+#     data = struct.pack(pattern, "12345678".encode("utf-8"))
 
-    # add to the reader in a stream-like way
-    for i in range(len(data)):
-        # should not be complete yet
-        assert not reader.is_complete()
-        # add the data
-        reader.feed(data[i:i+1])
+#     # add to the reader in a stream-like way
+#     for i in range(len(data)):
+#         # should not be complete yet
+#         assert not reader.is_complete()
+#         # add the data
+#         reader.feed(data[i:i+1])
 
-    # should be complete now
-    assert reader.is_complete()
+#     # should be complete now
+#     assert reader.is_complete()
 
-    # build the dataclass
-    msg = reader.build()
-    assert isinstance(msg, StringMessage)
-    assert isinstance(msg.data, str)
-    assert msg.data == "12345678"
+#     # build the dataclass
+#     msg = reader.build()
+#     assert isinstance(msg, StringMessage)
+#     assert isinstance(msg.data, str)
+#     assert msg.data == "12345678"
 
 
 @dataclass

@@ -38,7 +38,7 @@ class ComplexMessage:
     float64: F64
     int_native: int
     float_native: float
-    string: Annotated[str, 4]
+    # string: Annotated[str, 4]
     binary: Annotated[bytes, 4]
     repeated: Annotated[list[int], 4]
     nested: NestedMessage
@@ -60,7 +60,7 @@ def test_clean_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -86,7 +86,7 @@ def test_uint8_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -113,7 +113,7 @@ def test_uint16_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -140,7 +140,7 @@ def test_uint32_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -167,7 +167,7 @@ def test_uint64_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -194,7 +194,7 @@ def test_int8_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -221,7 +221,7 @@ def test_int16_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -248,7 +248,7 @@ def test_int32_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -275,7 +275,7 @@ def test_int64_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -302,7 +302,7 @@ def test_float16_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -329,7 +329,7 @@ def test_float32_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -356,7 +356,7 @@ def test_float64_validation() -> None:
         val,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -383,7 +383,7 @@ def test_int_validation() -> None:
         1.1,
         val,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -410,7 +410,7 @@ def test_float_validation() -> None:
         1.1,
         1,
         val,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -420,56 +420,56 @@ def test_float_validation() -> None:
         serialize(obj)
 
 
-def test_string_validation() -> None:
-    val = choice([1, 1.1, b"asdf", [1, 2, 3], NestedMessage(1)])
+# def test_string_validation() -> None:
+#     val = choice([1, 1.1, b"asdf", [1, 2, 3], NestedMessage(1)])
 
-    obj = ComplexMessage(
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1.1,
-        1.1,
-        1.1,
-        1,
-        1.1,
-        val,
-        b"asdf",
-        [1, 2, 3, 4],
-        NestedMessage(1)
-    )
+#     obj = ComplexMessage(
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1.1,
+#         1.1,
+#         1.1,
+#         1,
+#         1.1,
+#         val,
+#         b"asdf",
+#         [1, 2, 3, 4],
+#         NestedMessage(1)
+#     )
 
-    with pytest.raises(TypeError) as e:
-        serialize(obj)
+#     with pytest.raises(TypeError) as e:
+#         serialize(obj)
 
 
-def test_string_length_validation() -> None:
-    obj = ComplexMessage(
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1.1,
-        1.1,
-        1.1,
-        1,
-        1.1,
-        "asd",
-        b"asdf",
-        [1, 2, 3, 4],
-        NestedMessage(1)
-    )
+# def test_string_length_validation() -> None:
+#     obj = ComplexMessage(
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1,
+#         1.1,
+#         1.1,
+#         1.1,
+#         1,
+#         1.1,
+#         "asd",
+#         b"asdf",
+#         [1, 2, 3, 4],
+#         NestedMessage(1)
+#     )
 
-    with pytest.raises(TypeError) as e:
-        serialize(obj)
+#     with pytest.raises(TypeError) as e:
+#         serialize(obj)
 
 
 def test_bytes_validation() -> None:
@@ -489,7 +489,7 @@ def test_bytes_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         val,
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -514,7 +514,7 @@ def test_bytes_length_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asd",
         [1, 2, 3, 4],
         NestedMessage(1)
@@ -541,7 +541,7 @@ def test_list_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         val,
         NestedMessage(1)
@@ -566,7 +566,7 @@ def test_list_length_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3, 4, 5],
         NestedMessage(1)
@@ -591,7 +591,7 @@ def test_list_element_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asd",
         [1, 2, 3, "4"],
         NestedMessage(1)
@@ -618,7 +618,7 @@ def test_struct_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3],
         val
@@ -645,7 +645,7 @@ def test_struct_element_validation() -> None:
         1.1,
         1,
         1.1,
-        "asdf",
+        # "asdf",
         b"asdf",
         [1, 2, 3],
         NestedMessage(val)
