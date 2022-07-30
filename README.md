@@ -196,6 +196,11 @@ def main() -> None:
                 print(f"serialized data: {serialize(msg_bundle)}")
 ```
 
+## Other Examples
+- See [parse-sqlite-header.py](./examples/parse-sqlite-header.py) for an example of using `bytechomp` to read the header message of an sqlite file. A rough estimate of what this should result in can be found [here](https://docs.fileformat.com/database/sqlite/).
+- See [tcp-client-server.py](./examples/tcp-client-server.py) for an example of using `bytechomp` to serialize/deserialize binary messages across a TCP connection.
+
+
 ## How does this work?
 
 While a binary stream is usually represented as a flat, continuous data, `bytechomp` can be used as a structural abstraction over this data. Therefore, if there was a message with the following structure for a message called `UserState`:
@@ -255,4 +260,5 @@ This package is based on a mostly undocumented feature in standard implementatio
 **Future Improvements:**
 - Perhaps allowing for parameterized fields to reference previously declared fields (i.e. allowing a list of size `n` where `n` is the previous field)
 - Allow declaring value restraints on fields
+    - Making use of the `typing.Literal` python class
 - Allow for enums to be generated for integer fields

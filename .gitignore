@@ -131,3 +131,4 @@ dmypy.json
 # custom
 /tmp
 /.vscode
+*.sqlite
