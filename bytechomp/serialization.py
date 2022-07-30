@@ -46,7 +46,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                 )
 
             pattern += TYPE_TO_TAG[field.type]
-            values.append(val)
+            values.append(val)  # type: ignore
         elif is_dataclass(field.type):
             if not isinstance(val, val_t):
                 raise TypeError(
@@ -136,7 +136,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                                 f"{field.name} field contains {val_t} type but requires {field.type}"
                             )
 
-                        nested_pattern, nested_values = flatten_dataclass(field_element)
+                        nested_pattern, nested_values = flatten_dataclass(field_element)  # type: ignore
                         pattern += nested_pattern
                         values.extend(nested_values)
                 else:
