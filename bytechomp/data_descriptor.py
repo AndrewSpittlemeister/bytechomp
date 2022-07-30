@@ -112,9 +112,9 @@ def build_data_description(
 
             else:
                 raise Exception(f"unsupported annotated type: {arg_type} (field: {field.name})")
-        elif field.type in [list, bytes, str]:
+        elif field.type in [list, bytes]:
             raise Exception(
-                f"annotation needed for list/string/bytes (length required, field: {field.name})"
+                f"annotation needed for list/bytes (length required, field: {field.name})"
             )
         else:
             raise Exception(f"unsupported data type ({field.type}) on field {field.name}")
@@ -180,7 +180,7 @@ def resolve_basic_type(
         return arg
     # if isinstance(arg, bytes) and element.python_type is str:
     #     return arg.decode("utf-8")
-    raise Exception("invalid match between types")
+    raise Exception(f"invalid match between types: {type(arg)} != {element.python_type}")
 
 
 def build_structure(

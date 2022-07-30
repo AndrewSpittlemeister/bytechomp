@@ -41,8 +41,8 @@ TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {  # type: ignore
     float: "d",
 }
 
-TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type | None]] = {  # type: ignore
-    PAD: None,
+TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type]] = {  # type: ignore
+    PAD: int,
     U8: int,
     U16: int,
     U32: int,
