@@ -49,7 +49,7 @@ class Reader(Generic[T]):
             or not is_dataclass(self.__datatype)
             or self.__datatype is None
         ):
-            raise Exception("generic datatype must be a dataclass")
+            raise ValueError("generic datatype must be a dataclass")
 
         # verify that the datatype contains only known types
         self.__data_description = build_data_description(self.__datatype)

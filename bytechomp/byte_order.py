@@ -14,11 +14,8 @@ class ByteOrder(Enum):
 
     def to_pattern(self) -> str:
         """Returns the corresponding struct pattern."""
-
-        if self == ByteOrder.NATIVE:
-            return "@"
         if self == ByteOrder.BIG:
             return ">"
         if self == ByteOrder.LITTLE:
             return "<"
-        raise Exception("invalid enumeration value")
+        return "@"

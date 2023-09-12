@@ -1,6 +1,7 @@
 """
 bytechomp.serialization
 """
+# pylint: disable=broad-exception-raised
 
 import struct
 from typing import Annotated, get_origin, get_args
