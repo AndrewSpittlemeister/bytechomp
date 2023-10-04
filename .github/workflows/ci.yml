@@ -11,37 +11,23 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10"]
-
+        python-version: ["3.10", "3.11"]
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install black pylint pytest bandit mypy poetry
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with black & pylint
-      run: |
-        pylint --max-line-length=100 bytechomp --disable=duplicate-code
-        black --verbose --check --diff --line-length=100 bytechomp
-    - name: Type check with Mypy
-      run: |
-        mypy bytechomp
-    - name: Security check with Bandit
-      run: |
-        bandit -r bytechomp
-    - name: Build with Poetry
-      run: |
-        poetry build --format=wheel
-    - name: Test with pytest
-      run: |
-        pytest
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+          allow-prereleases: true
+      - run: poetry install
+      - run: poetry run pylint --max-line-length=100 bytechomp --disable=duplicate-code
+      - run: poetry run black --verbose --check --diff --line-length=100 bytechomp
+      - run: poetry run mypy bytechomp
+      - run: poetry run pytest

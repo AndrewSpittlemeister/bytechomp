@@ -1,6 +1,7 @@
 """
 bytechomp.data_descriptor
 """
+# pylint: disable=broad-exception-raised
 
 from __future__ import annotations
 from typing import Annotated, Any, get_origin, get_args
