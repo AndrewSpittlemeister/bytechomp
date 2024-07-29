@@ -1,6 +1,7 @@
 """
 bytechomp.data_descriptor
 """
+
 # pylint: disable=broad-exception-raised
 
 from __future__ import annotations
@@ -30,12 +31,12 @@ def build_data_description(
         OrderedDict[str, BasicParsingElement | list | OrderedDict]: Type tree of BasicParsingElement
             nodes.
     """
-    # pylint: disable=too-many-branches
-    # pylint: disable=duplicate-code
 
-    object_description: OrderedDict[
-        str, BasicParsingElement | list | OrderedDict | type
-    ] = OrderedDict()
+    # pylint: disable=too-many-branches disable=duplicate-code
+
+    object_description: OrderedDict[str, BasicParsingElement | list | OrderedDict | type] = (
+        OrderedDict()
+    )
     object_description["__struct_type__"] = datatype
 
     for field in fields(datatype):
