@@ -88,7 +88,7 @@ serialized_struct: bytes = serialize(my_struct)
 ```
 
 ## Supported Type Fields
-Fields on the dataclasses can be integers, floats, strings, bytes, lists, or other dataclasses. Python-native `int` and `float` represent 64-bit variants. Other sizes can be imported from `bytechomp`:
+Fields on the dataclasses can be integers, floats, bytes, lists, or other dataclasses. Python-native `int` and `float` represent 64-bit variants. Other sizes can be imported from `bytechomp`:
 
 ```python
 from bytechomp.datatypes import (
