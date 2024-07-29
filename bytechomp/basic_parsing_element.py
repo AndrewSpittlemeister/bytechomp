@@ -12,7 +12,7 @@ from bytechomp.datatypes.lookups import ELEMENTARY_TYPE
 class BasicParsingElement:
     """Describes a node in the type tree."""
 
-    parsing_type: ELEMENTARY_TYPE | bytes  # type: ignore
+    parsing_type: ELEMENTARY_TYPE | bytes
     python_type: type | None
     parser_tag: str
     length: int

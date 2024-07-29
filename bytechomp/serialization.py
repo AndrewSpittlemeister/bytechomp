@@ -5,7 +5,7 @@ bytechomp.serialization
 # pylint: disable=broad-exception-raised
 
 import struct
-from typing import Annotated, get_origin, get_args
+from typing import Annotated, get_origin, get_args, cast
 from dataclasses import is_dataclass, fields
 
 from bytechomp.datatypes.lookups import (
@@ -42,13 +42,13 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
         val_t = type(val)
 
         if field.type in ELEMENTARY_TYPE_LIST:
-            if not isinstance(val, TYPE_TO_PYTYPE[field.type]):  # type: ignore
+            if not isinstance(val, TYPE_TO_PYTYPE[field.type]):
                 raise TypeError(
                     f"{field.name} field contains {val_t} type but requires {field.type}"
                 )
 
             pattern += TYPE_TO_TAG[field.type]
-            values.append(val)  # type: ignore
+            values.append(cast(int | float | bytes, val))
         elif is_dataclass(field.type):
             if not isinstance(val, val_t):
                 raise TypeError(
@@ -123,7 +123,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                 if list_type in ELEMENTARY_TYPE_LIST:
                     element_type = TYPE_TO_PYTYPE[list_type]
                     for field_element in val:
-                        if not isinstance(field_element, element_type):  # type: ignore
+                        if not isinstance(field_element, element_type):
                             raise TypeError(
                                 f"{field.name} field contains {val_t} type but requires {field.type}"
                             )
@@ -133,7 +133,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                 elif is_dataclass(list_type):
                     element_type = list_type
                     for field_element in val:
-                        if not isinstance(field_element, element_type):  # type: ignore
+                        if not isinstance(field_element, element_type):
                             raise TypeError(
                                 f"{field.name} field contains {val_t} type but requires {field.type}"
                             )

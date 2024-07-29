@@ -5,7 +5,7 @@ bytechomp.data_descriptor
 # pylint: disable=broad-exception-raised
 
 from __future__ import annotations
-from typing import Annotated, Any, get_origin, get_args
+from typing import Annotated, Union, Any, get_origin, get_args
 from dataclasses import is_dataclass, fields, MISSING
 from collections import OrderedDict
 import inspect
@@ -18,25 +18,25 @@ from bytechomp.datatypes.lookups import (
 )
 from bytechomp.basic_parsing_element import BasicParsingElement
 
+TypeTree = OrderedDict[
+    str,
+    Union[type, BasicParsingElement, list[BasicParsingElement], list["TypeTree"], "TypeTree"],
+]
 
-def build_data_description(
-    datatype: type,
-) -> OrderedDict[str, BasicParsingElement | type | list | OrderedDict]:
+
+def build_data_description(datatype: type) -> TypeTree:
     """Uses reflection on the provided type to provide a tokenized type tree.
 
     Args:
         datatype (type): Type object for the user-defined dataclass.
 
     Returns:
-        OrderedDict[str, BasicParsingElement | list | OrderedDict]: Type tree of BasicParsingElement
-            nodes.
+        TypeTree: Type tree of BasicParsingElement nodes.
     """
 
-    # pylint: disable=too-many-branches disable=duplicate-code
+    # pylint: disable=too-many-branches
 
-    object_description: OrderedDict[str, BasicParsingElement | list | OrderedDict | type] = (
-        OrderedDict()
-    )
+    object_description: TypeTree = OrderedDict()
     object_description["__struct_type__"] = datatype
 
     for field in fields(datatype):
@@ -124,20 +124,11 @@ def build_data_description(
     return object_description
 
 
-def build_data_pattern(
-    description: OrderedDict[
-        str,
-        BasicParsingElement | type | list[BasicParsingElement | OrderedDict] | OrderedDict,
-    ]
-) -> str:
+def build_data_pattern(description: TypeTree) -> str:
     """Determines a packed data representation using the struct module binary pattern characters.
 
     Args:
-        description (
-            OrderedDict[
-                str, BasicParsingElement | list[BasicParsingElement | OrderedDict] | OrderedDict
-            ]
-        ): Type tree of BasicParsingElement nodes.
+        description (TypeTree): Type tree of BasicParsingElement nodes.
 
     Returns:
         str: Struct module pattern string.
@@ -187,20 +178,13 @@ def resolve_basic_type(
 
 def build_structure(
     args: list[int | float | bytes],
-    description: OrderedDict[
-        str,
-        BasicParsingElement | type | list[BasicParsingElement | OrderedDict] | OrderedDict,
-    ],
+    description: TypeTree,
 ) -> Any:
     """Constructs an instantiation of the data type described by the description argument.
 
     Args:
         args (list[int): Flat list of values returned from the struct module.
-        description (
-            OrderedDict[
-                str, BasicParsingElement | list[BasicParsingElement | OrderedDict] | OrderedDict
-            ]
-        ): Type tree of BasicParsingElement nodes.
+        description (TypeTree): Type tree of BasicParsingElement nodes.
 
     Returns:
         Any: Instantiated dataclass
