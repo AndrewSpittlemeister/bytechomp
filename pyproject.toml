@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bytechomp"
-version = "0.3.0"
+version = "0.4.0"
 description = "A pure python, declarative binary protocol parser & generator using dataclasses and type hinting."
 authors = ["Andrew Spittlemeister <andrew.spittlemeister@pm.me>"]
 license = "MIT"
@@ -14,7 +14,7 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.10"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "*"
 mypy = "*"
 bandit = "*"
@@ -24,5 +24,5 @@ pylint = "*"
 twine = "*"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
