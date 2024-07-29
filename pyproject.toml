@@ -23,6 +23,20 @@ pytest = "*"
 pylint = "*"
 twine = "*"
 
+[tool.black]
+line-length = 100
+verbose = true
+check = true
+diff = true
+
+[tool.pylint.format]
+max-line-length=100
+
+[tool.pylint."messages control"]
+disable = [
+    "duplicate-code"
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
