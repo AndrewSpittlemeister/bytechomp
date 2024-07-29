@@ -29,5 +29,5 @@ jobs:
       - run: poetry install --with=dev
       - run: poetry run pylint --max-line-length=100 bytechomp --disable=duplicate-code
       - run: poetry run black --verbose --check --diff --line-length=100 bytechomp
-      - run: poetry run mypy bytechomp
+      - run: poetry run mypy --strict bytechomp
       - run: poetry run pytest
