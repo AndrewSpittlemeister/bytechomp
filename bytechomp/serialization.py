@@ -2,8 +2,6 @@
 bytechomp.serialization
 """
 
-# pylint: disable=broad-exception-raised
-
 import struct
 from typing import Annotated, get_origin, get_args, cast
 from dataclasses import is_dataclass, fields
@@ -62,7 +60,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
             args = get_args(field.type)
 
             if len(args) != 2:
-                raise Exception(
+                raise TypeError(
                     f"annotated value should only have two arguments (field: {field.name})"
                 )
 
@@ -114,7 +112,7 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                 list_type_args = get_args(arg_type)
 
                 if len(list_type_args) != 1:
-                    raise Exception(
+                    raise TypeError(
                         f"list must contain only one kind of data type (field: {field.name})"
                     )
 
@@ -142,16 +140,16 @@ def flatten_dataclass(data_object: type) -> tuple[str, list[int | float | bytes]
                         pattern += nested_pattern
                         values.extend(nested_values)
                 else:
-                    raise Exception(f"unsupported list type: {list_type} (field: {field.name})")
+                    raise TypeError(f"unsupported list type: {list_type} (field: {field.name})")
 
             else:
-                raise Exception(f"unsupported annotated type: {arg_type} (field: {field.name})")
+                raise TypeError(f"unsupported annotated type: {arg_type} (field: {field.name})")
         elif field.type in [list, bytes]:
-            raise Exception(
+            raise TypeError(
                 f"annotation needed for list/bytes (length required, field: {field.name})"
             )
         else:
-            raise Exception(f"unsupported data type ({field.type}) on field {field.name}")
+            raise TypeError(f"unsupported data type ({field.type}) on field {field.name}")
 
     return pattern, values
 
