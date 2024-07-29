@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from bytechomp.datatypes.lookups import ELEMENTARY_TYPE
 
 
-@dataclass
+@dataclass(slots=True)
 class BasicParsingElement:
     """Describes a node in the type tree."""
 
