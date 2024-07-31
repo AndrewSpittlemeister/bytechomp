@@ -24,7 +24,6 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
           allow-prereleases: true
       - run: poetry install --with=dev
       - run: poetry run pylint --max-line-length=100 bytechomp --disable=duplicate-code
