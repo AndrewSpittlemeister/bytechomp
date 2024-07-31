@@ -3,7 +3,7 @@ bytechomp.reader
 """
 
 from __future__ import annotations
-from typing import Generic, TypeVar, Iterable, Iterator
+from typing import Generic, TypeVar, Iterable, Iterator, cast
 from dataclasses import is_dataclass
 from collections import OrderedDict
 from struct import Struct
@@ -14,6 +14,7 @@ from bytechomp.data_descriptor import (
     build_data_description,
     build_data_pattern,
     build_structure,
+    TypeTree,
 )
 
 T = TypeVar("T")  # pylint: disable=invalid-name
@@ -30,7 +31,7 @@ class Reader(Generic[T]):
         self.__datatype: type | None = None
         self.__byte_order = byte_order
         self.__data: bytes = b""
-        self.__data_description: OrderedDict = OrderedDict()
+        self.__data_description: TypeTree = OrderedDict()
         self.__data_pattern: str = ""
         self.__struct = Struct(self.__data_pattern)
 
@@ -76,14 +77,14 @@ class Reader(Generic[T]):
 
         self.__data += data
 
-    def __lshift__(self, data: bytes) -> Reader:
+    def __lshift__(self, data: bytes) -> Reader[T]:
         """Alternative to the feed method.
 
         Args:
             data (bytes): Binary data
 
         Returns:
-            Reader: Binary protocol reader.
+            Reader[T]: Binary protocol reader.
         """
 
         self.feed(data)
@@ -127,8 +128,9 @@ class Reader(Generic[T]):
             struct_bytes = self.__data[: self.__struct.size]
             self.__data = self.__data[self.__struct.size :]
             # print(f"unpacked: {self.__struct.unpack(struct_bytes)}")
-            return build_structure(
-                list(self.__struct.unpack(struct_bytes)), self.__data_description
+            return cast(
+                T,
+                build_structure(list(self.__struct.unpack(struct_bytes)), self.__data_description),
             )
         return None
 

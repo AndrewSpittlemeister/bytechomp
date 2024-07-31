@@ -2,8 +2,7 @@
 
 [![ci](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AndrewSpittlemeister/bytechomp/actions/workflows/ci.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/bytechomp.svg)](https://pypi.org/project/bytechomp/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/bytechomp.svg)](https://pypi.org/project/bytechomp/)
-![Lines of Code](https://tokei.rs/b1/github/AndrewSpittlemeister/bytechomp?category=code)
+[![Python Versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://pypi.org/project/bytechomp/)
 
 > *A pure python, declarative custom binary protocol parser & generator using dataclasses and type hinting.*
 
@@ -88,7 +87,7 @@ serialized_struct: bytes = serialize(my_struct)
 ```
 
 ## Supported Type Fields
-Fields on the dataclasses can be integers, floats, strings, bytes, lists, or other dataclasses. Python-native `int` and `float` represent 64-bit variants. Other sizes can be imported from `bytechomp`:
+Fields on the dataclasses can be integers, floats, bytes, lists, or other dataclasses. Python-native `int` and `float` represent 64-bit variants. Other sizes can be imported from `bytechomp`:
 
 ```python
 from bytechomp.datatypes import (

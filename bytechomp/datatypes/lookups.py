@@ -4,10 +4,23 @@ bytechomp.datatypes.declarations
 
 from typing import NewType, Final
 
-from bytechomp.datatypes.declarations import *  # pylint: disable=wildcard-import
+from bytechomp.datatypes.declarations import (
+    PAD,
+    U8,
+    U16,
+    U32,
+    U64,
+    I8,
+    I16,
+    I32,
+    I64,
+    F16,
+    F32,
+    F64,
+)
 
 ELEMENTARY_TYPE = type | NewType
-ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [  # type: ignore
+ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [
     PAD,
     U8,
     U16,
@@ -24,7 +37,7 @@ ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [  # type: ignore
     float,
 ]
 
-TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {  # type: ignore
+TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {
     PAD: "x",
     U8: "B",
     U16: "H",
@@ -41,7 +54,7 @@ TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {  # type: ignore
     float: "d",
 }
 
-TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type]] = {  # type: ignore
+TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type]] = {
     PAD: int,
     U8: int,
     U16: int,
@@ -58,7 +71,7 @@ TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type]] = {  # type: ignore
     float: float,
 }
 
-TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {  # type: ignore
+TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {
     PAD: 1,
     U8: 1,
     U16: 2,
