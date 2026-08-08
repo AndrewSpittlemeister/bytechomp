@@ -35,6 +35,7 @@ ELEMENTARY_TYPE_LIST: Final[list[ELEMENTARY_TYPE]] = [
     F64,
     int,
     float,
+    str,
 ]
 
 TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {
@@ -52,6 +53,7 @@ TYPE_TO_TAG: Final[dict[ELEMENTARY_TYPE, str]] = {
     F64: "d",
     int: "Q",
     float: "d",
+    str: "s",
 }
 
 TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type]] = {
@@ -69,6 +71,7 @@ TYPE_TO_PYTYPE: Final[dict[ELEMENTARY_TYPE, type]] = {
     F64: float,
     int: int,
     float: float,
+    str: str,
 }
 
 TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {
@@ -86,4 +89,5 @@ TYPE_TO_LENGTH: Final[dict[ELEMENTARY_TYPE, int]] = {
     F64: 8,
     int: 8,
     float: 8,
+    str: 1,
 }
